@@ -23,6 +23,9 @@ able to find relevant results based on page content and popularity. So, order ap
 system based on the actions of agents. An agent-based modeling approach would work especially well, as each user of the search engine is an agent that interacts with the environment of the websites and engine results.
 
 &nbsp; 
+
+*__LS COMMENTS__: Solid explanation. For the ultimate writeup, I would consider emphasizing the feedbacks between usage patterns and search results to make the case of why ABM is a good fit for this situation.*
+
 ### Main Micro-level Processes and Macro-level Dynamics of Interest
 ****
 
@@ -30,6 +33,7 @@ I'm interested in exploring how the search engine can learn from the individual 
 
 &nbsp; 
 
+*__LS COMMENTS:__ Good high-level overview. Are you thinking about the page ordering being the macro-level outcome of interest? Are there other macro-level outcomes such as changes or the establishment of patterns in web traffic or average length of search time that might be of interest here?*
 
 ## Model Outline
 ****
@@ -97,6 +101,8 @@ class SearchEngine:
 
 &nbsp; 
 
+*LS COMMENTS: Great start here.*
+
 ### 2) Agents
  
 The agents of the system are the users of the search engine. Each user will have some topic that they want to research. Like the web pages, this will be represented by a integer topic and a one-dimensional information vector of integers normally distributed around the topic. They will then query the search engine about the topic and examine the resulting list of web pages. They will choose from the web pages based on a given page's placement in the list and its title's relevance to the information the user is seeking. At each page, the user will read the page information and search for the info that they are seeking. If not enough relevant info is found, the user may leave the site before reading all of the information. Any info that is found is removed from the search vector, and the user updates their query to exclude that info. This continues until the user is satisfied with the amount of information that they have found.
@@ -125,11 +131,15 @@ class User:
 
 &nbsp; 
 
+*__LS COMMENTS__: I like the way that you are thinking about representing not just conent but the interactions here. Well thought out. One thing to consider is that the threshold of how much of a page is read in relation to how much of the required information is matched before agents decide to leave is something that will need to be specified explicitly. I might suggest making this homogenous and potentially probabilistic across agents on this initial iteration.*
+
 ### 3) Action and Interaction 
  
 **_Interaction Topology_**
 
 In the model, agents do not directly interact. Instead, they interact with the environment of the search engine. The data collected about agents affects subsequent search results, so the actions of each agent will indirectly affect the actions of all future agents. The agents can interact with any web page, but as with real search engines, higher-ranked web pages are much more likely to be visited.
+ 
+ *__LS COMMENTS__: Good.*
  
 **_Action Sequence_**
 
@@ -145,6 +155,9 @@ In the model, agents do not directly interact. Instead, they interact with the e
 10. Repeat from step 2.
 
 &nbsp; 
+
+*__LS COMMENTS__: Solid approach and good structure of turns. How the user balances between title and list order will be really important here.*
+
 ### 4) Model Parameters and Initialization
 
 There are a few global parameters I will be applying in my model. The first is the total number of web pages indexed by the search engine. The second is the range of possible information that can be found on web pages, i.e. the possible range of the integers in the info vectors. The third is the lengths of the web page titles and page information. Longer titles could give a better idea of the content of the page. The last is the standard deviations of the normal distributions used by pages and users. I might want to vary this by page and user to see how it affects the relevance of a page.
@@ -156,6 +169,10 @@ First, the model is initialized as described above. Then, once a user has been g
 
 &nbsp; 
 
+*__LS COMMENTS__: Some of these steps are not initiallization so much as a description of the interaction terms. Ordering strategies will be important - I would suggest just using one or two to start and doing lots of runs to make sure you know how they are behaving before getting into a wider repetoire of options.*
+
+*One big thing to also consider with initialization is similarity in searches across what users are looking for. A lot of search algorithms implicitly depend on an assumption that most people are looking for similar things with a query, which is what leads there to be an emergent ordering of "most relevant". To capture this, you might make sure that agents have a certain amount of overlap in what they are looking for intergerwise, or have them accept things that are "close enough" to the values they are looking for, with all the agents pulling from the same distribution of intergers.*
+
 ### 5) Assessment and Outcome Measures
 
 From this model, I hope to find out how different types of data and page ranking strategies affects the relevance of results to user queries. To measure this, I will iterate over a very large number of users and measure the total number of web pages visited and information consumed before each user is satisfied with the information they have found. I will look at these as running averages and hopefully see them trend downwards over time.
@@ -164,6 +181,8 @@ Additonally, I think it might be interesting to compare the usefulness of the di
 
 &nbsp; 
 
+*__LS COMMENT__: Great!*
+
 ### 6) Parameter Sweep
 
 I'm most interested in sweeping through the weights that the search engine gives each kind of data. I think that the different types of data will have very different levels of usefulness, so I'm interested in how much an optimal weighting will improve search relevance.
@@ -171,3 +190,5 @@ I'm most interested in sweeping through the weights that the search engine gives
 Also, I'm interested in sweeping through the number of web pages indexed by the search engine. I suspect that initially, more web pages will increase search relevance, but there will quickly be a point of diminishing returns. With a very large number of pages, some pages may be very relevant to a query, but they will be ignored in favor of relevant enough pages that were visited by previous agents. I would like to explore from a small number of web pages (~100) to a very large number (~1,000,000).
 
 Finally, I'm also interested in sweeping through information value ranges. With a larger range, I expect it to generally take longer to find relevant results. What I would be interested in exploring is the interaction between the range and the number of web pages needed to increase relevancy. I expect these two values to be closely connected, so I would like to sweep through both at once.
+
+*__LS COMMENTS__: Great project and a super solid approach that seems both feasible and likely to yield some interesting dynamics. Look forward to seeing what you ultimately get. 19/20*
